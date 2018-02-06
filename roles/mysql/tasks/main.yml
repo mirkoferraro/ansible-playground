@@ -34,7 +34,7 @@
     - localhost
 
 - name: Add .my.cnf
-  # template: src=my.cnf.j2 dest=/home/vagrant/.my.cnf owner=root group=root mode=0600
+  template: src=my.cnf.j2 dest={{ ansible_env.HOME }}/.my.cnf owner=root group=root mode=0600
   template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
 
 - name: "Create database"
