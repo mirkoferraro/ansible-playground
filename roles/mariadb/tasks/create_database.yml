@@ -1,0 +1,14 @@
+---
+
+- name: "Create database"
+  mysql_db: name="{{ mysql_db_name }}" state=present
+
+- name: "Grant user access to DB"
+  mysql_user: name="{{ mysql_db_user }}" priv="{{ mysql_db_name }}.*:ALL" host="%" password={{ mysql_db_pass }} state=present
+
+- name: "Grant user access to DB"
+  mysql_user: name="{{ mysql_db_user }}" priv="{{ mysql_db_name }}.*:ALL" host={{ item }} password={{ mysql_db_pass }} state=present
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - ::1

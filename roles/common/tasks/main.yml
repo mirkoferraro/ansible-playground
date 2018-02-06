@@ -1,0 +1,17 @@
+---
+- name: Install necessary packages for proper system state
+  run_once: true
+  apt: name={{ item }} state=latest
+  with_items:
+    - sysv-rc-conf
+    - python-apt
+    - python-pycurl
+    - python-mysqldb
+    - git
+    - curl
+    - unzip
+    - traceroute
+    - ack-grep
+    - subversion
+    - autojump
+    - siege

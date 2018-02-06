@@ -1,0 +1,65 @@
+---
+- name: Add PHP repository
+  run_once: true
+  apt_repository: repo='ppa:ondrej/php' state=present
+
+- name: Install PHP packages
+  run_once: true
+  apt: name={{ item }} state=present
+  with_items:
+      - php7.1
+      - php7.1-cli
+      - php7.1-fpm
+      - php7.1-opcache
+      - php7.1-curl
+      - php7.1-soap
+      - php7.1-gd
+      - php7.1-imagick
+      - php7.1-mbstring
+      - php7.1-mcrypt
+      - php7.1-mysql
+      - php7.1-mysqli
+      - php7.1-pdo
+      - php7.1-pdo-mysql
+      - php7.1-memcache
+      - php7.1-memcached
+      - php7.1-xdebug
+      - php7.1-xml
+      - phpunit
+      - libapache2-mod-php7.1
+
+- name: Setup OpCache
+  when: op_cache_enabled == true
+  lineinfile:
+    path: /etc/php/7.1/mods-available/opcache.ini
+    line: '{{ item }}'
+  with_items:
+    - [opcache]
+    - opcache.enable=0
+    - opcache.memory_consumption=512
+    - opcache.max_accelerated_files=32531
+    - opcache.validate_timestamps=0
+    - opcache.save_comments=1
+    - opcache.fast_shutdown=0
+
+- name: Setup XDebug
+  when: xdebug_enabled == true
+  lineinfile:
+    path: /etc/php/7.1/mods-available/xdebug.ini
+    line: '{{ item }}'
+  with_items:
+    - [xdebug]
+    - xdebug.default_enable=1
+    - xdebug.remote_enable=1
+    - xdebug.remote_autostart=1
+    - xdebug.remote_host=10.0.2.2
+    - xdebug.remote_port=9001
+    - xdebug.remote_handler="dbgp"
+    - xdebug.remote_connect_back=1
+    - xdebug.remote_mode=req
+    - xdebug.idekey="vagrant"
+
+- name: Install Composer
+  when: install_composer == true
+  run_once: true
+  get_url: url=https://getcomposer.org/composer.phar dest=/usr/local/bin/composer mode=0755 validate_certs=no

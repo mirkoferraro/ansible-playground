@@ -1,0 +1,50 @@
+---
+
+- name: Install apache2
+  run_once: true
+  apt: name=apache2 state=present
+  notify:
+    - apache2 restart
+
+- name: Remove unnecessary apache2 files
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "/var/www/html/"
+    - "/etc/apache2/sites-enabled/000-default.conf"
+
+# - name: Create docroot
+#   file:
+#     path: "/var/www/{{inventory_hostname}}/{{docroot}}"
+#     state: directory
+#     owner: www-data
+#     group: www-data
+#     mode: 0775
+#     recurse: yes
+
+- name: Create log directory
+  file:
+    path: "/var/log/apache2/{{inventory_hostname}}"
+    state: directory
+    owner: root
+    group: adm
+    mode: 0750
+    recurse: yes
+
+- name: Create apache2 configuration
+  run_once: true
+  template: src=etc/apache2/sites-available/default.conf dest=/etc/apache2/sites-available/{{inventory_hostname}}.conf owner=root group=root mode=0644
+
+- name: Enable apache2 configuration
+  file:
+    src: "/etc/apache2/sites-available/{{inventory_hostname}}.conf"
+    dest: "/etc/apache2/sites-enabled/{{inventory_hostname}}.conf"
+    state: link
+
+- name: Enable apache2 mod rewrite
+  apache2_module:
+    state: present
+    name: rewrite
+  notify:
+    - apache2 restart

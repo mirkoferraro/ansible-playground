@@ -1,0 +1,11 @@
+---
+- hosts: all
+  connection: local
+  roles:
+    - common
+    - { role: mysql, when: install_db == 'mysql' }
+    - { role: mariadb, when: install_db == 'mariadb' }
+    - { role: php, run_once: true }
+    - apache2
+    - { role: memcached, when: install_memcached == true }
+    - { role: redis, when: install_redis == true }

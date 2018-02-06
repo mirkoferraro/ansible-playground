@@ -1,0 +1,51 @@
+---
+
+- name: Add the repository for MySql 5.6
+  become: yes
+  command: add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe'
+
+- name: Update
+  become: yes
+  command: apt update
+
+- name: Install mysql
+  apt: pkg={{ item }} state=installed
+  become: true
+  with_items:    
+    - mysql-server-5.6
+    - mysql-client-5.6
+    - python-mysqldb
+    - libmysqlclient-dev
+
+- name : Ensure mysql started
+  become: yes
+  service: name=mysql state=started enabled=yes
+
+- name: Update MySQL root password for all root accounts
+  mysql_user: name=root 
+              host={{ item }} 
+              password=root
+              login_user=root
+              login_password=""
+              state=present
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Add .my.cnf
+  # template: src=my.cnf.j2 dest=/home/vagrant/.my.cnf owner=root group=root mode=0600
+  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
+
+- name: "Create database"
+  mysql_db: name="vagrant" state=present
+
+- name: "Grant user access to DB"
+  mysql_user: name="vagrant" priv="vagrant.*:ALL" host="%" password={{mysql_db_pass}} state=present
+
+- name: "Grant user access to DB"
+  mysql_user: name="vagrant" priv="vagrant.*:ALL" host={{ item }} password={{mysql_db_pass}} state=present
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - ::1
