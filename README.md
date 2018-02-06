@@ -14,7 +14,7 @@ An Ansible playbook for Playground
 $ sudo apt-add-repository -y ppa:ansible/ansible
 $ sudo apt update
 $ sudo apt upgrade -y
-$ sudo apt install -y software-properties-common, ansible, git
+$ sudo apt install -y software-properties-common ansible git
 ```
 
 ### Step 2 - Clone the repository
