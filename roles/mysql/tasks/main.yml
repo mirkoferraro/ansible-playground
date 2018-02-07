@@ -24,7 +24,7 @@
 - name: Update MySQL root password for all root accounts
   mysql_user: name=root 
               host={{ item }} 
-              password=root
+              password={{ mysql_root_password }}
               login_user=root
               login_password=""
               state=present
@@ -38,13 +38,13 @@
   template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
 
 - name: "Create database"
-  mysql_db: name="vagrant" state=present
+  mysql_db: name="{{ mysql_db_name }}" state=present
 
 - name: "Grant user access to DB"
-  mysql_user: name="vagrant" priv="vagrant.*:ALL" host="%" password={{mysql_db_pass}} state=present
+  mysql_user: name="{{ mysql_db_user }}" priv="{{ mysql_db_name }}.*:ALL" host="%" password={{ mysql_db_pass }} state=present
 
 - name: "Grant user access to DB"
-  mysql_user: name="vagrant" priv="vagrant.*:ALL" host={{ item }} password={{mysql_db_pass}} state=present
+  mysql_user: name="{{ mysql_db_user }}" priv="{{ mysql_db_name }}.*:ALL" host={{ item }} password={{ mysql_db_pass }} state=present
   with_items:
     - localhost
     - 127.0.0.1
