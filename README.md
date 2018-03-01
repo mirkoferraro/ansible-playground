@@ -3,10 +3,12 @@ An Ansible playbook for Playground
 
 **Includes:**
 * PHP 7.1
+* Composer
 * MySql 5.6
 * Apache 2
 * Memcached
 * Redis
+* Node 8
 
 ## Installation
 ### Step 1 - Prepare the machine

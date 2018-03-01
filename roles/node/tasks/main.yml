@@ -1,0 +1,9 @@
+---
+
+- name: Add Node 8 repository
+  run_once: true
+  apt_repository: repo='https://deb.nodesource.com/setup_8.x' state=present
+
+- name: Install Node
+  run_once: true
+  apt: name=nodejs state=present
