@@ -1,5 +1,4 @@
 ---
-install_db: mysql
 mysql_root_password: secret
 mysql_db_name: dbname
 mysql_db_user: dbuser

@@ -3,8 +3,7 @@
   connection: local
   roles:
     - common
-    - { role: mysql, when: install_db == 'mysql' }
-    - { role: mariadb, when: install_db == 'mariadb' }
+    - mysql
     - { role: php, run_once: true }
     - apache2
     - { role: memcached, when: install_memcached == true }
