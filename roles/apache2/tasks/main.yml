@@ -34,7 +34,6 @@
     recurse: yes
 
 - name: Create apache2 configuration
-  run_once: true
   template: src=etc/apache2/sites-available/default.conf dest=/etc/apache2/sites-available/{{inventory_hostname}}.conf owner=root group=root mode=0644
 
 - name: Enable apache2 configuration
