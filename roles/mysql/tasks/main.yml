@@ -3,10 +3,12 @@
 - name: Add the repository for MySql 5.6
   become: yes
   command: add-apt-repository 'deb http://archive.ubuntu.com/ubuntu trusty universe'
+  run_once: true
 
 - name: Update
   become: yes
   command: apt update
+  run_once: true
 
 - name: Install mysql
   apt: pkg={{ item }} state=installed
@@ -16,10 +18,12 @@
     - mysql-client-5.6
     - python-mysqldb
     - libmysqlclient-dev
+  run_once: true
 
 - name : Ensure mysql started
   become: yes
   service: name=mysql state=started enabled=yes
+  run_once: true
 
 - name: Update MySQL root password for all root accounts
   mysql_user: name=root 
@@ -32,13 +36,21 @@
     - 127.0.0.1
     - ::1
     - localhost
+  run_once: true
 
 - name: Add .my.cnf
   template: src=my.cnf.j2 dest={{ ansible_env.HOME }}/.my.cnf owner=root group=root mode=0600
   template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
+  run_once: true
+
+- name: "Check if database exists"
+  shell: mysql --host=127.0.0.1 --user=root --password={{ mysql_root_password }} -e 'SHOW DATABASES;' | grep -c {{ db_name }}
+  register: dbstatus
+  failed_when: dbstatus.rc == 2
 
 - name: "Create database"
   mysql_db: name="{{ mysql_db_name }}" state=present
+  when: dbstatus.stdout == "0"
 
 - name: "Grant user access to DB"
   mysql_user: name="{{ mysql_db_user }}" priv="{{ mysql_db_name }}.*:ALL" host="%" password={{ mysql_db_pass }} state=present

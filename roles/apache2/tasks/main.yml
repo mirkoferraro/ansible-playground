@@ -13,6 +13,7 @@
   with_items:
     - "/var/www/html/"
     - "/etc/apache2/sites-enabled/000-default.conf"
+  run_once: true
 
 # - name: Create docroot
 #   file:

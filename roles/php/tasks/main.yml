@@ -42,6 +42,7 @@
     - opcache.validate_timestamps=0
     - opcache.save_comments=1
     - opcache.fast_shutdown=0
+  run_once: true
 
 - name: Setup XDebug
   when: xdebug_enabled == true
@@ -59,8 +60,9 @@
     - xdebug.remote_connect_back=1
     - xdebug.remote_mode=req
     - xdebug.idekey="vagrant"
+  run_once: true
 
 - name: Install Composer
   when: install_composer == true
-  run_once: true
   get_url: url=https://getcomposer.org/composer.phar dest=/usr/local/bin/composer mode=0755 validate_certs=no
+  run_once: true

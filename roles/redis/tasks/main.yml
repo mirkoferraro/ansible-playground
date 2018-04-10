@@ -2,16 +2,19 @@
 # Variable setup.
 - name: Include OS-specific variables.
   include_vars: "redis.yml"
+  run_once: true
 
 - name: Define redis_package.
   set_fact:
     redis_package: "{{ __redis_package }}"
   when: redis_package is not defined
+  run_once: true
 
 - name: Ensure Redis is installed.
   apt:
     name: "{{ redis_package }}"
     state: present
+  run_once: true
 
 - name: Ensure Redis is configured.
   template:
@@ -19,6 +22,8 @@
     dest: "{{ redis_conf_path }}"
     mode: 0644
   notify: restart redis
+  run_once: true
 
 - name: Ensure Redis is running and enabled on boot.
   service: "name={{ redis_daemon }} state=started enabled=yes"
+  run_once: true
