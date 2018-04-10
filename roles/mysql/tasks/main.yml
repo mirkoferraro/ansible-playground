@@ -44,7 +44,7 @@
   run_once: true
 
 - name: "Check if database exists"
-  shell: mysql --host=127.0.0.1 --user=root --password={{ mysql_root_password }} -e 'SHOW DATABASES;' | grep -c {{ db_name }}
+  shell: mysql --host=127.0.0.1 --user=root --password={{ mysql_root_password }} -e 'SHOW DATABASES;' | grep -c {{ mysql_db_name }}
   register: dbstatus
   failed_when: dbstatus.rc == 2
 
