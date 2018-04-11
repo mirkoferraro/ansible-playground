@@ -36,6 +36,9 @@
 - name: Create apache2 configuration
   template: src=etc/apache2/sites-available/default.conf dest=/etc/apache2/sites-available/{{inventory_hostname}}.conf owner=root group=root mode=0644
 
+- name: Create apache2 SSL configuration
+  template: src=etc/apache2/sites-available/ssl.conf dest=/etc/apache2/sites-available/{{inventory_hostname}}-ssl.conf owner=root group=root mode=0644
+
 - name: Enable apache2 configuration
   file:
     src: "/etc/apache2/sites-available/{{inventory_hostname}}.conf"
