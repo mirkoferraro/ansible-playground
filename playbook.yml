@@ -8,3 +8,7 @@
     - apache2
     - { role: memcached, when: install_memcached == true }
     - { role: redis, when: install_redis == true }
+
+- name: set timezone to Europe/Rome
+  timezone:
+    name: Europe/Rome
