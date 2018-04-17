@@ -3,7 +3,7 @@
   run_once: true
   apt_repository: repo='ppa:ondrej/php' state=present
 
-- name: Install PHP packages
+- name: Install PHP 7.1 packages
   run_once: true
   apt: name={{ item }} state=present
   with_items:
@@ -29,17 +29,34 @@
       - phpunit
       - libapache2-mod-php7.1
       - libapache2-mod-fastcgi
-      - php5.6-fpm
-      - php5.6
-      - php5.6-dev
-      - php5.6-mcrypt
-      - php5.6-mbstring
-      - php5.6-mysql
-      - php5.6-zip
-      - php5.6-gd
-      - php5.6-xml
 
-- name: Setup OpCache
+- name: Install PHP 5.6 packages
+  when: php_version == 5.6
+  run_once: true
+  apt: name={{ item }} state=present
+  with_items:
+      - php5.6
+      - php5.6-cli
+      - php5.6-fpm
+      - php5.6-opcache
+      - php5.6-curl
+      - php5.6-soap
+      - php5.6-gd
+      - php5.6-imagick
+      - php5.6-mbstring
+      - php5.6-mcrypt
+      - php5.6-mysql
+      - php5.6-mysqli
+      - php5.6-pdo
+      - php5.6-pdo-mysql
+      - php5.6-memcache
+      - php5.6-memcached
+      - php5.6-xdebug
+      - php5.6-xml
+      - php5.6-zip
+      - libapache2-mod-php5.6
+
+- name: Setup OpCache 7.1
   when: op_cache_enabled == true
   lineinfile:
     path: /etc/php/7.1/mods-available/opcache.ini
@@ -54,10 +71,47 @@
     - opcache.fast_shutdown=0
   run_once: true
 
-- name: Setup XDebug
+- name: Setup OpCache 5.6
+  when: 
+    - op_cache_enabled == true
+    - php_version == 5.6
+  lineinfile:
+    path: /etc/php/5.6/mods-available/opcache.ini
+    line: '{{ item }}'
+  with_items:
+    - [opcache]
+    - opcache.enable=0
+    - opcache.memory_consumption=512
+    - opcache.max_accelerated_files=32531
+    - opcache.validate_timestamps=0
+    - opcache.save_comments=1
+    - opcache.fast_shutdown=0
+  run_once: true
+
+- name: Setup XDebug 7.1
   when: xdebug_enabled == true
   lineinfile:
     path: /etc/php/7.1/mods-available/xdebug.ini
+    line: '{{ item }}'
+  with_items:
+    - [xdebug]
+    - xdebug.default_enable=1
+    - xdebug.remote_enable=1
+    - xdebug.remote_autostart=1
+    - xdebug.remote_host=10.0.2.2
+    - xdebug.remote_port=9001
+    - xdebug.remote_handler="dbgp"
+    - xdebug.remote_connect_back=1
+    - xdebug.remote_mode=req
+    - xdebug.idekey="vagrant"
+  run_once: true
+
+- name: Setup XDebug 5.6
+  when:
+    - xdebug_enabled == true
+    - php_version == 5.6
+  lineinfile:
+    path: /etc/php/5.6/mods-available/xdebug.ini
     line: '{{ item }}'
   with_items:
     - [xdebug]

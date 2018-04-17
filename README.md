@@ -2,10 +2,10 @@
 An Ansible playbook for Playground
 
 **Includes:**
-* PHP 7.1
+* PHP 7.1 (and 5.6 if needed)
 * Composer
 * MySql 5.6
-* Apache 2
+* Apache 2 with FastCGI
 * Memcached
 * Redis
 * Node 8
@@ -31,4 +31,9 @@ Edit *~/ansible-playground/hosts* and *~/ansible-playground/host_vars/yourhostna
 ```shell
 $ cd ~/ansible-playground
 $ sudo ansible-playbook -i hosts playbook.yml -c local
+```
+
+### Step 5 - Restart ansible at specific task
+```shell
+$ sudo ansible-playbook -i hosts playbook.yml -c local --start-at-task="your task name"
 ```
