@@ -51,3 +51,6 @@
     name: rewrite
   notify:
     - apache2 restart
+
+-name: Enable apache2 a2enmod actions fastcgi
+  shell: a2enmod actions fastcgi
