@@ -38,8 +38,11 @@
     - localhost
   run_once: true
 
-- name: Add .my.cnf
+- name: Add .my.cnf to home
   template: src=my.cnf.j2 dest={{ ansible_env.HOME }}/.my.cnf owner=root group=root mode=0600
+  run_once: true
+  
+- name: Add .my.cnf to root
   template: src=my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
   run_once: true
 
