@@ -19,3 +19,8 @@
 - name: set timezone to Europe/Rome
   timezone:
     name: Europe/Rome
+
+- name: Install Adminer
+  when: install_adminer == true
+  get_url: url=https://www.adminer.org/latest.php dest=/var/www/{{inventory_hostname}}/{{docroot}}/adminer.php mode=0755
+  run_once: true

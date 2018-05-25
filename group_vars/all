@@ -5,3 +5,4 @@ op_cache_enabled: false
 xdebug_enabled: true
 install_memcached: true
 install_redis: true
+install_adminer: true
