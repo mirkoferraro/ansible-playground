@@ -6,3 +6,4 @@ docroot: public
 email_apache: webmaster@localhost
 php_version: 71
 install_adminer: true
+ssl: true

@@ -1,3 +1,4 @@
+sudo adduser vagrant sudo
 sudo apt-add-repository -y ppa:ansible/ansible
 sudo apt update
 sudo apt upgrade -y

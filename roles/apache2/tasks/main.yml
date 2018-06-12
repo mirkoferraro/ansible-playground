@@ -23,6 +23,7 @@
     - actions
     - fastcgi
     - rewrite
+    - ssl
 
 - name: Create fastcgi configuration
   template: src=etc/apache2/mods-available/fastcgi.conf dest=/etc/apache2/mods-available/fastcgi.conf owner=root group=root mode=0644
@@ -36,23 +37,24 @@
     dest: "/etc/apache2/mods-enabled/fastcgi.conf"
     state: link
 
-# - name: Create docroot
-#   file:
-#     path: "/var/www/{{inventory_hostname}}/{{docroot}}"
-#     state: directory
-#     owner: www-data
-#     group: www-data
-#     mode: 0775
-#     recurse: yes
+- name: Create docroot
+  file:
+    path: "/var/www/{{inventory_hostname}}/{{docroot}}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
+    recurse: yes
 
 - name: Create log directory
   file:
     path: "/var/log/apache2/{{inventory_hostname}}"
     state: directory
     owner: root
-    group: adm
-    mode: 0750
+    group: root
+    mode: 0755
     recurse: yes
+  run_once: true
 
 - name: Create apache2 configuration
   template: src=etc/apache2/sites-available/default.conf dest=/etc/apache2/sites-available/{{inventory_hostname}}.conf owner=root group=root mode=0644
@@ -60,9 +62,37 @@
 - name: Create apache2 SSL configuration
   template: src=etc/apache2/sites-available/ssl.conf dest=/etc/apache2/sites-available/{{inventory_hostname}}-ssl.conf owner=root group=root mode=0644
 
+- name: Create ssl directory
+  file:
+    path: "/etc/apache2/ssl"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    recurse: yes
+  run_once: true
+
+- name: Create self-signed SSL key
+  when: ssl == true
+  command: openssl genrsa -out /etc/apache2/ssl/{{inventory_hostname}}.key 2048
+
+- name: Create self-signed SSL certificate
+  when: ssl == true
+  command: openssl req -new -x509 -key /etc/apache2/ssl/{{inventory_hostname}}.key -out /etc/apache2/ssl/{{inventory_hostname}}.cert -days 3650 -subj /CN={{inventory_hostname}}
+
 - name: Enable apache2 configuration
+  when: ssl == false
   file:
     src: "/etc/apache2/sites-available/{{inventory_hostname}}.conf"
+    dest: "/etc/apache2/sites-enabled/{{inventory_hostname}}.conf"
+    state: link
+  notify:
+    - apache2 restart
+
+- name: Enable apache2 SSL configuration
+  when: ssl == true
+  file:
+    src: "/etc/apache2/sites-available/{{inventory_hostname}}-ssl.conf"
     dest: "/etc/apache2/sites-enabled/{{inventory_hostname}}.conf"
     state: link
   notify:
@@ -71,3 +101,4 @@
 - name: Install Adminer
   when: install_adminer == true
   get_url: url=https://www.adminer.org/latest.php dest=/var/www/{{inventory_hostname}}/{{docroot}}/adminer.php mode=0755
+  run_once: true
