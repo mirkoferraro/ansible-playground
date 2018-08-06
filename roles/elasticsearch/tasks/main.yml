@@ -1,0 +1,71 @@
+---
+
+- name: Add the repository for Java 8
+  become: yes
+  command: add-apt-repository 'ppa:webupd8team/java'
+  run_once: true
+
+- name: Update
+  become: yes
+  command: apt update
+  run_once: true
+
+- name: Accept Java 8 License
+  become: yes
+  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+  run_once: true
+
+- name: Install Java 8
+  apt: pkg=oracle-java8-installer state=present
+  become: true
+  run_once: true
+
+- name: Setup JAVA_HOME
+  lineinfile:
+    path: /etc/environment
+    line: "JAVA_HOME=\"/usr/lib/jvm/java-8-oracle\""
+    insertbefore: BOF
+  run_once: true
+
+- name: Source java environment
+  sudo: notify
+  shell: source /etc/environment
+  args:
+     executable: /bin/bash
+  run_once: true
+
+
+
+- name: Download ElasticSearch deb file
+  get_url: 
+    url="https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.1/elasticsearch-2.3.1.deb"
+    dest="/tmp/elasticsearch.deb"
+  run_once: true
+
+- name: Install ElasticSearch
+  apt: deb="/tmp/elasticsearch.deb"
+  sudo: true
+  run_once: true
+
+- name: Delete downloaded file
+  file:
+    state: absent
+    path: "/tmp/elasticsearch.deb"
+  run_once: true
+
+- name: Add elastic config
+  template: src=elasticsearch.yml dest=/etc/elasticsearch/elasticsearch.yml owner=root group=elasticsearch mode=0750
+  sudo: true
+  run_once: true
+
+- name: Add logging config
+  template: src=logging.yml dest=/etc/elasticsearch/logging.yml owner=root group=elasticsearch mode=0750
+  sudo: true
+  run_once: true
+
+- name: Ensure Elasticsearch is running and enabled on boot
+  service: "name=elasticsearch state=started enabled=yes"
+  sudo: true
+  run_once: true
+  notify:
+    - elasticsearch restart

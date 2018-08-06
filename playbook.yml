@@ -8,3 +8,4 @@
     - apache2
     - { role: memcached, when: install_memcached == true }
     - { role: redis, when: install_redis == true }
+    - { role: elasticsearch, when: install_elasticsearch == true }
