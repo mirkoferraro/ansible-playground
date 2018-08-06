@@ -11,7 +11,7 @@
   run_once: true
 
 - name: Install mysql
-  apt: pkg={{ item }} state=installed
+  apt: pkg={{ item }} state=present
   become: true
   with_items:    
     - mysql-server-5.6
